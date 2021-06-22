@@ -7,4 +7,5 @@ def handle(request):
     method = request.method
     if(method == 'GET'):
         list = model_list
+        print(list)
         return JsonResponse(list)

@@ -49,11 +49,9 @@ services:
         ports: 
             - "8500:8500"
             - "8501:8501"
-        volumes: ["D:/data_docker/model/aquisition_field_model:/models/aquisition_field_model",
-                "D:/data_docker/model/pt_segmentation_model:/models/pt_segmentation_model"]
-        environment:
-            MODEL_NAME: "aquisition_field_model"
-            MODEL_NAME: "pt_segmentation_model"
+        volumes: 
+            - "D:/data_docker/models:/models"
+        command: --model_config_file=/models/models.config
 
 volumes:
         orthanc:
