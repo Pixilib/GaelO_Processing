@@ -1,4 +1,4 @@
 model_list = {
     'aquisition_field_model': 'InferenceAcquisitionField',
-    'PT_segmentation': 'InferencePTSegmentation'
+    'pt_segmentation_model': 'InferencePTSegmentation'
 }
