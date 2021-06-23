@@ -13,7 +13,7 @@ from dicom_to_cnn.model.post_processing.mip.MIP_Generator import MIP_Generator
 
 class InferenceAcquisitionField(AbstractInference):  
 
-    def pre_process(self, idImage:str) -> TensorProto:
+    def pre_process(self, dictionaire:dict) -> TensorProto:
         """[summary]
 
         Args:
@@ -22,7 +22,9 @@ class InferenceAcquisitionField(AbstractInference):
         Returns:
             TensorProto: [description]
         """
+        dict=dictionaire
         data_path = settings.STORAGE_DIR
+        idImage=str(dict['id'])
         path_ct =data_path+'/image/image_'+idImage+'.nii'
         objet = Nifti(path_ct)
         resampled = objet.resample(shape=(256, 256, 1024))
@@ -68,6 +70,7 @@ class InferenceAcquisitionField(AbstractInference):
         if(maxPosition == 2) : leg='Foot'
 
         dict={'left_arm_down':left_arm,'right_arm_down':right_arm,'head':head,'leg':leg}
+        print(dict)
         return dict
 
     def get_input_name(self) -> str:
