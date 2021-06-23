@@ -9,7 +9,7 @@ def handle(request, model_name):
     method = request.method
     if(method == 'GET'):
         metadata = get_metadata(model_name)
-        return JsonResponse(metadata, safe=False)
+        return JsonResponse(metadata)
 
 
 def get_metadata(model_name) -> dict:

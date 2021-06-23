@@ -13,7 +13,7 @@ def handle(request, model_name=''):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
         tensorflow_response = prediction(body, model_name)
-        return JsonResponse(tensorflow_response)
+        return JsonResponse(tensorflow_response,safe=False)
 
 
 def prediction(idImage: str, model_name: str) -> dict:

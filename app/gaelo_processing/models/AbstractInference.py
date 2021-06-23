@@ -22,8 +22,11 @@ class AbstractInference(ABC):
         """
         # call pre_process
         input_tensor = self.pre_process(idImage)
+        max=256*128*128*10*10
         channel = grpc.insecure_channel(
-            settings.TENSORFLOW_SERVING_ADDRESS+':'+settings.TENSORFLOW_SERVING_PORT)
+            settings.TENSORFLOW_SERVING_ADDRESS+':'+settings.TENSORFLOW_SERVING_PORT,options=[('grpc.max_message_length', max),
+                                         ('grpc.max_send_message_length', max),
+                                         ('grpc.max_receive_message_length', max)])
         version = Int64Value(value=1)  # version hardcodee
         model_spec = ModelSpec(
             version=version, name=self.get_model_name(), signature_name='serving_default')

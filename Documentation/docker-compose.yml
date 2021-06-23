@@ -7,7 +7,7 @@ services:
         container_name: gaeloprocessing
         restart: unless-stopped
         ports: ["8001:8000"]
-        volumes: ["D:/Code/Gaelo_Processing:/home/gaelo_processing:Z"]
+        volumes: ["/home/deeplearning/GaeloProcessingNicolas/GaelO_Processing:/home/gaelo_processing:Z"]
         environment:
             TZ: "Europe/Paris"
             ORTHANC_PROTOCOL: 'http://'
@@ -50,7 +50,7 @@ services:
             - "8500:8500"
             - "8501:8501"
         volumes: 
-            - "D:/data_docker/models:/models"
+            - "/home/deeplearning/GaeloProcessingNicolas/data_docker/models:/models"
         command: --model_config_file=/models/models.config
 
 volumes:

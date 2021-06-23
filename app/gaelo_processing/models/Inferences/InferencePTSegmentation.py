@@ -1,12 +1,14 @@
 import SimpleITK as sitk
 import numpy as np
+from numpy.core.arrayprint import array2string
+from numpy.core.fromnumeric import resize
 import tensorflow as tf
 
 from django.conf import settings
 from tensorflow.core.framework.tensor_pb2 import TensorProto
 from ..AbstractInference import AbstractInference
 
-from dicom_to_cnn.model.fusion import Fusion
+from dicom_to_cnn.model.fusion.Fusion import Fusion
 
 class InferencePTSegmentation(AbstractInference):  
 
@@ -26,22 +28,36 @@ class InferencePTSegmentation(AbstractInference):
 
         ct_array = sitk.GetArrayFromImage(ct_resampled)
         pt_array = sitk.GetArrayFromImage(pt_resampled)
-        data = np.zeros((256, 128, 128, 2), dtype='float32')
-        data[:,:,:,0] = np.array(ct_array).astype('float32')
-        data[:,:,:,1] = np.array(pt_array).astype('float32')
 
+        #Normalize PET
+        pt_array[np.where(pt_array < 0)] = 0 #0 SUV
+        pt_array[np.where(pt_array > 25)] = 25 #25 SUV
+        pt_array = pt_array[:,:,]/25
+
+        #Normalize CT
+        ct_array[np.where(ct_array < -1000)] = -1000 #-1000 SUV
+        ct_array[np.where(ct_array > 1000)] = 1000 #1000 SUV
+        ct_array=ct_array+1000
+        ct_array = ct_array[:,:,]/2000
+        data=np.stack((pt_array,ct_array),axis=-1).astype('float32')
         # image = sitk.GetImageFromArray(data, True)
         # sitk.WriteImage(image, data_path+'/image/image_fusion.nii')
         #continuer vers inference
-       
-        return tf.make_tensor_proto(data, shape=[1,128,128,256,2])
+        return tf.make_tensor_proto(data, shape=[1,256,128,128,2])
 
-    def post_process(self, result) -> dict:       
-        print(result)
-        return result
+    def post_process(self, result) -> dict:     
+        results=result.outputs['tf.math.sigmoid_4']
+        array = np.array(list(results.float_val))
+        array=array.reshape((256,128,128))
+        array=np.around(array)
+        data_path = settings.STORAGE_DIR
+        image = sitk.GetImageFromArray(array, True)
+        sitk.WriteImage(image, data_path+'/image/image_fusion_test.nii')    
+        
+        #return result
 
     def get_input_name(self) -> str:
-        return 'input_1'
+        return 'input'
     
     def get_model_name(self) -> str:
         return 'pt_segmentation_model'

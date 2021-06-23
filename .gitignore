@@ -11,3 +11,7 @@ __pycache__/
 .vscode/settings.json
 orthanc.zip
 gaelo_processing/.env
+app/storage/image/image_fusion_test.nii
+app/storage/image/image_1.3.12.2.1107.5.1.4.45520.30000013102404450495300000013_PT.nii
+app/storage/image/image_1.3.12.2.1107.5.1.4.45520.30000013102404450495300000013_CT.nii
+.gitignore
