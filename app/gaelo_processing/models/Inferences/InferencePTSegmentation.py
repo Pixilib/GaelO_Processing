@@ -40,19 +40,17 @@ class InferencePTSegmentation(AbstractInference):
         ct_array=ct_array+1000
         ct_array = ct_array[:,:,]/2000
         data=np.stack((pt_array,ct_array),axis=-1).astype('float32')
-        # image = sitk.GetImageFromArray(data, True)
-        # sitk.WriteImage(image, data_path+'/image/image_fusion.nii')
-        #continuer vers inference
         return tf.make_tensor_proto(data, shape=[1,256,128,128,2])
 
-    def post_process(self, result) -> dict:     
+    def post_process(self, result) -> dict:  
         results=result.outputs['tf.math.sigmoid_4']
-        array = np.array(list(results.float_val))
-        array=array.reshape((256,128,128))
+        shape=tf.TensorShape(results.tensor_shape)
+        array = np.array(results.float_val).reshape(shape.as_list())
         array=np.around(array)
+        print(array.shape)
         data_path = settings.STORAGE_DIR
         image = sitk.GetImageFromArray(array, True)
-        sitk.WriteImage(image, data_path+'/image/image_fusion_test.nii')    
+        sitk.WriteImage(image, data_path+'/image/image_from_array.nii')    
         
         #return result
 
