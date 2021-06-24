@@ -13,7 +13,8 @@ class test_tensorflow_controller(TestCase):
 
 
     def test_predict(self):
-        setting = {"id": ["1.3.12.2.1107.5.1.4.45520.30000013102404450495300000013","1.3.12.2.1107.5.1.4.45520.30000013102404450495300000013"]}
+        setting = {"id": ["1.3.12.2.1107.5.1.4.45520.30000013102404450495300000013","1.3.12.2.1107.5.1.4.45520.30000013102404450495300000013"],"methode":"save_as_mask"}
+        
         c = Client()
         response = c.post('/app/models/pt_segmentation_model/inference', setting, content_type='application/json')
         self.assertTrue(response.status_code == 200)

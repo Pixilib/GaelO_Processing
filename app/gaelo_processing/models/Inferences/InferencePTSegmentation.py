@@ -1,3 +1,4 @@
+import hashlib
 import SimpleITK as sitk
 from SimpleITK.SimpleITK import ImageReaderBase, Transform
 from SimpleITK.extra import GetImageFromArray
@@ -11,12 +12,16 @@ from tensorflow.core.framework.tensor_pb2 import TensorProto
 from ..AbstractInference import AbstractInference
 
 from dicom_to_cnn.model.fusion.Fusion import Fusion
+from dicom_to_cnn.model.segmentation.dicom_seg.DICOMSEG_Writer import DICOMSEG_Writer
+from dicom_to_cnn.model.segmentation.rtstruct.RTSS_Writer import RTSS_Writer
 
 class InferencePTSegmentation(AbstractInference):  
 
     def pre_process(self, dictionaire:dict) -> TensorProto:
         idPT=str(dictionaire['id'][0])
         idCT=str(dictionaire['id'][1])
+        methode=str(dictionaire['methode'])
+        self.methode=methode
         data_path = settings.STORAGE_DIR
         path_ct=data_path+'/image/image_'+idCT+'_CT.nii'
         path_pt=data_path+'/image/image_'+idPT+'_PT.nii'
@@ -72,8 +77,9 @@ class InferencePTSegmentation(AbstractInference):
         transformation.SetDefaultPixelValue(0.0)
         transformation.SetInterpolator(sitk.sitkNearestNeighbor)
         image=transformation.Execute(image)
-        data_path = settings.STORAGE_DIR
-        sitk.WriteImage(image, data_path+'/image/image_from_array.nii')
+        if self.methode=="save_as_mask":
+            save=InferencePTSegmentation
+            id_mask=save.__save_to_nifti(image)
         #return result
 
     def get_input_name(self) -> str:
@@ -82,6 +88,12 @@ class InferencePTSegmentation(AbstractInference):
     def get_model_name(self) -> str:
         return 'pt_segmentation_model'
 
-    def __save_to_nifti(image):
+    def __save_to_nifti(image:sitk.Image):
         data_path = settings.STORAGE_DIR
-        sitk.WriteImage(image, data_path+'/image/image_from_array.nii')
+        mask_md5 = hashlib.md5(str(image).encode())
+        id_mask = mask_md5.hexdigest()
+        sitk.WriteImage(image, data_path+'/mask/mask_'+id_mask+'.nii')
+        return id_mask
+
+    def __save_to_rtstruct():
+        return
