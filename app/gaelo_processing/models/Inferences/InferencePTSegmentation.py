@@ -6,6 +6,7 @@ import numpy as np
 from numpy.core.arrayprint import array2string
 from numpy.core.fromnumeric import reshape, resize
 import tensorflow as tf
+from abc import ABC
 
 from django.conf import settings
 from tensorflow.core.framework.tensor_pb2 import TensorProto
@@ -20,8 +21,8 @@ class InferencePTSegmentation(AbstractInference):
     def pre_process(self, dictionaire:dict) -> TensorProto:
         idPT=str(dictionaire['id'][0])
         idCT=str(dictionaire['id'][1])
-        methode=str(dictionaire['methode'])
-        self.methode=methode
+        method=str(dictionaire['method'])
+        self.method=method
         data_path = settings.STORAGE_DIR
         path_ct=data_path+'/image/image_'+idCT+'_CT.nii'
         path_pt=data_path+'/image/image_'+idPT+'_PT.nii'
@@ -77,9 +78,18 @@ class InferencePTSegmentation(AbstractInference):
         transformation.SetDefaultPixelValue(0.0)
         transformation.SetInterpolator(sitk.sitkNearestNeighbor)
         image=transformation.Execute(image)
-        if self.methode=="save_as_mask":
+        if self.method=="save_as_mask":
             save=InferencePTSegmentation
             id_mask=save.__save_to_nifti(image)
+        if self.method=='save_as_dicomseg':
+            mask_path=settings.STORAGE_DIR+'/mask/mask_9d6b3c32f48ad50a34778618a6e9303e.nii'
+            serie_path=settings.STORAGE_DIR+'dicom/1.2.276.0.7230010.3.1.4.2267612261.1368.1197888473.4/1.2.276.0.7230010.3.1.4.2267612261.1368.1197888484.513/7030106071217114802'
+            save=InferencePTSegmentation
+            save.__save_to_dicomseg(image,serie_path)
+        if self.method=='save_as_rtstruct':
+            save=InferencePTSegmentation
+            serie_path=settings.STORAGE_DIR+'dicom/1.2.276.0.7230010.3.1.4.2267612261.1368.1197888473.4/1.2.276.0.7230010.3.1.4.2267612261.1368.1197888484.513/7030106071217114802'
+            save.__save_to_rtsruct(image,serie_path)
         #return result
 
     def get_input_name(self) -> str:
@@ -88,12 +98,22 @@ class InferencePTSegmentation(AbstractInference):
     def get_model_name(self) -> str:
         return 'pt_segmentation_model'
 
-    def __save_to_nifti(image:sitk.Image):
+    def __save_to_nifti(mask:sitk.Image):
         data_path = settings.STORAGE_DIR
-        mask_md5 = hashlib.md5(str(image).encode())
+        mask_md5 = hashlib.md5(str(mask).encode())
         id_mask = mask_md5.hexdigest()
-        sitk.WriteImage(image, data_path+'/mask/mask_'+id_mask+'.nii')
+        sitk.WriteImage(mask, data_path+'/mask/mask_'+id_mask+'.nii')
         return id_mask
 
-    def __save_to_rtstruct():
-        return
+    def __save_to_dicomseg(mask:sitk.Image,dicom_path:str):        
+        dicomseg=DICOMSEG_Writer       
+        
+        #directory_path=settings.STORAGE_DIR+'/dicom/dicomseg'
+        #filename='dicomseg_9d6b3c32f48ad50a34778618a6e9303e'
+        #dicomseg.save_file(self=dicomseg,filename=filename,directory_path=directory_path)
+
+    def __save_to_rtsruct(mask:sitk.Image,serie_path:str):
+        rtsrtuct=RTSS_Writer
+        rtsrtuct.mask_img=mask
+        rtsrtuct.serie_path=serie_path
+      
