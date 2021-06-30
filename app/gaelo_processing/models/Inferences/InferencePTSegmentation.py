@@ -13,16 +13,16 @@ from tensorflow.core.framework.tensor_pb2 import TensorProto
 from ..AbstractInference import AbstractInference
 
 from dicom_to_cnn.model.fusion.Fusion import Fusion
-from dicom_to_cnn.model.segmentation.dicom_seg.DICOMSEG_Writer import DICOMSEG_Writer
-from dicom_to_cnn.model.segmentation.rtstruct.RTSS_Writer import RTSS_Writer
-
+from dicom_to_cnn.model.segmentation.ExportSegmentation_Writer import ExportSegmentation_Writer
 class InferencePTSegmentation(AbstractInference):  
 
     def pre_process(self, dictionaire:dict) -> TensorProto:
         idPT=str(dictionaire['id'][0])
         idCT=str(dictionaire['id'][1])
         method=str(dictionaire['method'])
+        mode=str(dictionaire['mode'])
         self.method=method
+        self.mode=mode
         data_path = settings.STORAGE_DIR
         path_ct=data_path+'/image/image_'+idCT+'_CT.nii'
         path_pt=data_path+'/image/image_'+idPT+'_PT.nii'
@@ -78,18 +78,17 @@ class InferencePTSegmentation(AbstractInference):
         transformation.SetDefaultPixelValue(0.0)
         transformation.SetInterpolator(sitk.sitkNearestNeighbor)
         image=transformation.Execute(image)
-        if self.method=="save_as_mask":
+
+        if self.method=="save_as_nifti":
             save=InferencePTSegmentation
             id_mask=save.__save_to_nifti(image)
-        if self.method=='save_as_dicomseg':
-            mask_path=settings.STORAGE_DIR+'/mask/mask_9d6b3c32f48ad50a34778618a6e9303e.nii'
-            serie_path=settings.STORAGE_DIR+'dicom/1.2.276.0.7230010.3.1.4.2267612261.1368.1197888473.4/1.2.276.0.7230010.3.1.4.2267612261.1368.1197888484.513/7030106071217114802'
+        if self.method=='save_as_dicomseg_rtstruct':
+            mask_path=settings.STORAGE_DIR+'/mask/mask_c8beb81c82d24e7b9daab8749b3f0138.nii'
+            serie_path=settings.STORAGE_DIR+'/dicom/11009101406003 11009101406003/V0 V0/PT WB_CTAC Body'
+            mode=self.mode
             save=InferencePTSegmentation
-            save.__save_to_dicomseg(image,serie_path)
-        if self.method=='save_as_rtstruct':
-            save=InferencePTSegmentation
-            serie_path=settings.STORAGE_DIR+'dicom/1.2.276.0.7230010.3.1.4.2267612261.1368.1197888473.4/1.2.276.0.7230010.3.1.4.2267612261.1368.1197888484.513/7030106071217114802'
-            save.__save_to_rtsruct(image,serie_path)
+            save.__save_to_dicomseg_rtstruct(mask_path,serie_path,mode)
+        
         #return result
 
     def get_input_name(self) -> str:
@@ -105,15 +104,15 @@ class InferencePTSegmentation(AbstractInference):
         sitk.WriteImage(mask, data_path+'/mask/mask_'+id_mask+'.nii')
         return id_mask
 
-    def __save_to_dicomseg(mask:sitk.Image,dicom_path:str):        
-        dicomseg=DICOMSEG_Writer       
+    def __save_to_dicomseg_rtstruct(mask_path:str,serie_path:str,mode:str):     
+        mask_img = sitk.ReadImage(mask_path) 
+        mask_img = sitk.Cast(mask_img, sitk.sitkUInt16)
+        mode = mode
+        directory_path=settings.STORAGE_DIR+'/dicom/dicomseg'
+        filename='dicomseg_9d6b3c32f48ad50a34778618a6e9303e'
+        writer = ExportSegmentation_Writer(mask_img, mode = mode, serie_path=serie_path)
+        writer.save_file(filename, directory_path)
         
-        #directory_path=settings.STORAGE_DIR+'/dicom/dicomseg'
-        #filename='dicomseg_9d6b3c32f48ad50a34778618a6e9303e'
-        #dicomseg.save_file(self=dicomseg,filename=filename,directory_path=directory_path)
 
-    def __save_to_rtsruct(mask:sitk.Image,serie_path:str):
-        rtsrtuct=RTSS_Writer
-        rtsrtuct.mask_img=mask
-        rtsrtuct.serie_path=serie_path
+ 
       
