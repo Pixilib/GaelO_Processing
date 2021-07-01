@@ -13,16 +13,16 @@ from dicom_to_cnn.model.post_processing.mip.MIP_Generator import MIP_Generator
 
 class InferenceAcquisitionField(AbstractInference):  
 
-    def pre_process(self, dictionaire:dict) -> TensorProto:
+    def pre_process(self, dictionnaire:dict) -> TensorProto:
         """[summary]
 
         Args:
-            idImage (str): [description]
+            dictionnaire (dict): [Dictionary containing the id of the images]
 
         Returns:
             TensorProto: [description]
         """
-        dict=dictionaire
+        dict=dictionnaire
         data_path = settings.STORAGE_DIR
         idImage=str(dict['id'])
         path_ct =data_path+'/image/image_'+idImage+'.nii'

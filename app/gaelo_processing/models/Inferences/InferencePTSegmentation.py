@@ -1,4 +1,5 @@
 import hashlib
+import os
 import SimpleITK as sitk
 from SimpleITK.SimpleITK import ImageReaderBase, Transform
 from SimpleITK.extra import GetImageFromArray
@@ -18,9 +19,18 @@ from dicom_to_cnn.model.segmentation.dicom_seg.DICOMSEG_Writer import DICOMSEG_W
 
 class InferencePTSegmentation(AbstractInference):  
 
-    def pre_process(self, dictionaire:dict) -> TensorProto:
-        idPT=str(dictionaire['id'][0])
-        idCT=str(dictionaire['id'][1])
+    def pre_process(self, dictionnaire:dict) -> TensorProto:
+        """[summary]
+
+        Args:
+            dictionnaire (dict): [Dictionary containing the id of the images]
+
+        Returns:
+            TensorProto: [description]
+        """
+
+        idPT=str(dictionnaire['id'][0])
+        idCT=str(dictionnaire['id'][1])
         
         data_path = settings.STORAGE_DIR
         path_ct=data_path+'/image/image_'+idCT+'_CT.nii'
@@ -59,6 +69,14 @@ class InferencePTSegmentation(AbstractInference):
         return tf.make_tensor_proto(data, shape=[1,256,128,128,2])
 
     def post_process(self, result) -> dict:  
+        """[summary]
+
+        Args:
+            result ([type]): [description]
+
+        Returns:
+            dict: [Id of images generated]
+        """
         results=result.outputs['tf.math.sigmoid_4']
         shape=tf.TensorShape(results.tensor_shape)
         array = np.array(results.float_val).reshape(shape.as_list())
@@ -77,14 +95,17 @@ class InferencePTSegmentation(AbstractInference):
         transformation.SetDefaultPixelValue(0.0)
         transformation.SetInterpolator(sitk.sitkNearestNeighbor)
         image=transformation.Execute(image)
+        
         #save to nifti
         save_nifti=InferencePTSegmentation
         id_mask=save_nifti.__save_to_nifti(image)
-        
-        mask_path=settings.STORAGE_DIR+'/mask/mask_c8beb81c82d24e7b9daab8749b3f0138.nii'
+        mask_path=settings.STORAGE_DIR+'/mask/mask_'+id_mask+'.nii'
         serie_path=settings.STORAGE_DIR+'/dicom/11009101406003 11009101406003/V0 V0/PT WB_CTAC Body'
+        
+        #save to dicomseg and dicomrt
         save=InferencePTSegmentation
-        save.__save_to_dicomseg_rtstruct(mask_path,serie_path)
+        ids=save.__save_to_dicomseg_rtstruct(mask_path,serie_path)
+        dict={'id_mask':id_mask, 'id_dicomseg': ids[0] ,'id_dicomrt':ids[1] }
         
         #return result
 
@@ -104,26 +125,30 @@ class InferencePTSegmentation(AbstractInference):
     def __save_to_dicomseg_rtstruct(mask_path:str,serie_path:str):     
         mask_img = sitk.ReadImage(mask_path) 
         mask_img = sitk.Cast(mask_img, sitk.sitkUInt16)
+
+        #Save at dicomseg
         directory_path_seg=settings.STORAGE_DIR+'/dicom/dicomseg'
-        filename_seg='dicomseg_9d6b3c32f48ad50a34778618a6e9303e'
-        #dicomseg = ExportSegmentation_Writer(mask_img, mode = 'dicomseg', serie_path=serie_path)
         dicomseg = DICOMSEG_Writer(mask_img, serie_path=serie_path)
+        dicomseg_md5 = hashlib.md5(str(dicomseg).encode())
+        id_dicomseg = dicomseg_md5.hexdigest()    
+        filename_seg='dicomseg_'+id_dicomseg
+        
         dicomseg.setDictName('dict')
         dicomseg.setBodyPartExaminated('all body')
         dicomseg.setSeriesDescription('description')
         dicomseg.setAutoRoiName()
         dicomseg.save_file(filename_seg, directory_path_seg)
-        #rtstruct = ExportSegmentation_Writer(mask_img, mode = 'rtstruct', serie_path=serie_path)
+
+        #Save at dicomrt
         directory_path_rt=settings.STORAGE_DIR+'/dicom/dicomrt'
-        filename_rt='dicomrt_9d6b3c32f48ad50a34778618a6e9303e'
         rtstruct = RTSS_Writer(mask_img, serie_path=serie_path)
+        rtstruct_md5 = hashlib.md5(str(rtstruct).encode())
+        id_dicomrt = rtstruct_md5.hexdigest()
+        filename_rt='dicomrt_'+id_dicomrt        
         rtstruct.setDictName('dict')
         rtstruct.setBodyPartExaminated('all body')
         rtstruct.setSeriesDescription('description')
         rtstruct.setAutoRTROIInterpretedType()
         rtstruct.setAutoRoiName()
         rtstruct.save_file(filename_rt, directory_path_rt)
-        
-
- 
-      
+        return id_dicomseg,id_dicomrt #{'id_dicomrt': id_dicomrt, 'id_dicomseg': id_dicomseg}
