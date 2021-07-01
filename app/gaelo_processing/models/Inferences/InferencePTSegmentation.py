@@ -106,8 +106,8 @@ class InferencePTSegmentation(AbstractInference):
         save=InferencePTSegmentation
         ids=save.__save_to_dicomseg_rtstruct(mask_path,serie_path)
         dict={'id_mask':id_mask, 'id_dicomseg': ids[0] ,'id_dicomrt':ids[1] }
-        
-        #return result
+       
+        return dict
 
     def get_input_name(self) -> str:
         return 'input'
