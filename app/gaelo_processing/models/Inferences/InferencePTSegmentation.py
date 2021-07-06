@@ -31,6 +31,8 @@ class InferencePTSegmentation(AbstractInference):
 
         idPT=str(dictionnaire['id'][0])
         idCT=str(dictionnaire['id'][1])
+        idserie_dicom=str(dictionnaire['id'][2])
+
         
         data_path = settings.STORAGE_DIR
         path_ct=data_path+'/image/image_'+idCT+'_CT.nii'
@@ -100,8 +102,7 @@ class InferencePTSegmentation(AbstractInference):
         save_nifti=InferencePTSegmentation
         id_mask=save_nifti.__save_to_nifti(image)
         mask_path=settings.STORAGE_DIR+'/mask/mask_'+id_mask+'.nii'
-        serie_path=settings.STORAGE_DIR+'/dicom/11009101406003 11009101406003/V0 V0/PT WB_CTAC Body'
-        
+        serie_path=settings.STORAGE_DIR+'/dicom/dicom_serie_001_pt'
         #save to dicomseg and dicomrt
         save=InferencePTSegmentation
         ids=save.__save_to_dicomseg_rtstruct(mask_path,serie_path)

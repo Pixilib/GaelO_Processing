@@ -25,21 +25,29 @@ class InferenceAcquisitionField(AbstractInference):
         dict=dictionnaire
         data_path = settings.STORAGE_DIR
         idImage=str(dict['id'])
-        path_ct =data_path+'/image/image_'+idImage+'.nii'
-        objet = Nifti(path_ct)
-        resampled = objet.resample(shape=(256, 256, 1024))
-        mip_generator = MIP_Generator(resampled)
-        array=mip_generator.project(angle=0)
+        nifti_path =data_path+'/image/image_'+idImage+'_CT.nii'
+        resampled_array = Nifti(nifti_path).resample(shape_matrix=(256, 256, 1024), shape_physic=(700, 700, 2000))
+        resampled_array[np.where(resampled_array < 500)] = 0 #500 UH
+        normalize = resampled_array[:,:,:,]/np.max(resampled_array) #normalize
+        mip_generator = MIP_Generator(normalize)
+        mip = mip_generator.project(angle=0)
+        mip = np.expand_dims(mip, -1)
+        mip = np.array(mip).astype('float32')
+
+        #objet = Nifti(path_ct)
+        #resampled = objet.resample(shape=(256, 256, 1024))
+        #mip_generator = MIP_Generator(resampled)
+        #array=mip_generator.project(angle=0)
         #Ici va disparaitre avec un nouvel entrainement sur des tailles natives et tete en bas (reference dicom)
         #et image normalisee de 0 a 1024 puis normalise de 0 a 1
-        array = np.flip(array, 0)
-        array = resize(array, (503, 136))
+        #array = np.flip(array, 0)
+        #array = resize(array, (503, 136))
         #fin
-        array[np.where(array < 500)] = 0 #500 UH
-        array[np.where(array > 1024)] = 0 #1024 UH
-        array = array[:,:,]/1024
-        array = np.array(array).astype('float32')
-        return tf.make_tensor_proto(array, shape=[1,503,136,1])
+        #array[np.where(array < 500)] = 0 #500 UH
+        #array[np.where(array > 1024)] = 0 #1024 UH
+        #array = array[:,:,]/1024
+        #array = np.array(array).astype('float32')
+        return tf.make_tensor_proto(mip, shape=[1,1024,256,1])
 
     def post_process(self, result) -> dict:
         resultDict = {}
@@ -64,7 +72,7 @@ class InferenceAcquisitionField(AbstractInference):
         else :
             head=False
         
-        maxPosition = resultDict['leg'].index(max(resultDict['leg']))
+        maxPosition = resultDict['legs'].index(max(resultDict['legs']))
         if(maxPosition == 0) : leg='Hips'
         if(maxPosition == 1) : leg='Knee'
         if(maxPosition == 2) : leg='Foot'
