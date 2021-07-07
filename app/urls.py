@@ -11,6 +11,8 @@ from .gaelo_processing.controller import tensorflow_controller
 from .gaelo_processing.controller import dicom_zip_controller
 from .gaelo_processing.controller import models_list_controller
 from .gaelo_processing.controller import models_metadata_controller
+from .gaelo_processing.controller import dicom_controller
+from .gaelo_processing.controller import dicom_id_controller
 
 urlpatterns = [
     path('radiomics/image/<str:idImage>/mask/<str:idMask>',pyradiomics.handle,name='post_radiomics'),
@@ -24,4 +26,6 @@ urlpatterns = [
     path('models/<str:model_name>/metadata',models_metadata_controller.handle,name='model_metadata'),
     path('models',models_list_controller.handle,name='get_list_models'),
     path('dicom',dicom_zip_controller.handle,name='get_dicom_zip'),
+    path('dicom/<str:idSerie>',dicom_controller.handle,name='del_dicom'),
+    path('dicoms',dicom_id_controller.handle, name='get_dicom_ids'),
 ]
