@@ -7,7 +7,7 @@ services:
         container_name: gaeloprocessing
         restart: unless-stopped
         ports: ["8001:8000"]
-        volumes: ["/home/deeplearning/GaeloProcessingNicolas/GaelO_Processing:/home/gaelo_processing:Z"]
+        volumes: ["D:/Code/GaelO_Processing:/home/gaelo_processing:Z"]
         environment:
             TZ: "Europe/Paris"
             ORTHANC_PROTOCOL: 'http://'
@@ -17,6 +17,8 @@ services:
             ORTHANC_PASSWORD: "salim"
             TENSORFLOW_SERVING_ADDRESS : 'tfserving'
             TENSORFLOW_SERVING_PORT : 8500
+            PYTORCH_SERVE_ADRESS : 'torchserve'
+            PYTORCH_SERVE_PORT : 8080
 
     orthanc:
         image: osimis/orthanc:21.5.1
@@ -50,8 +52,16 @@ services:
             - "8500:8500"
             - "8501:8501"
         volumes: 
-            - "/home/deeplearning/GaeloProcessingNicolas/data_docker/models:/models"
+            - "D:/data_docker/models:/models"
         command: --model_config_file=/models/models.config
+
+    torchserve:
+        image: pytorch/torchserve2
+        ports:
+            - "7070:7070"
+            - "7071:7071"
+        volumes: [ "D:/data_docker/torchserve/Lorine/grpc_pytorch/model-store:/models"]
+        command: torchserve --start --model-store model-store --models model_classification=model_classification.mar
 
 volumes:
         orthanc:

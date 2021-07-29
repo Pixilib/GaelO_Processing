@@ -3,7 +3,7 @@ import tensorflow as tf
 from django.conf import settings
 
 from tensorflow.core.framework.tensor_pb2 import TensorProto
-from ..AbstractInference import AbstractInference
+from ..AbstractTensorflow import AbstractTensorflow
 
 from skimage.transform import resize
 
@@ -11,7 +11,7 @@ from dicom_to_cnn.model.reader.Nifti import Nifti
 from dicom_to_cnn.model.post_processing.mip.MIP_Generator import MIP_Generator 
 
 
-class InferenceAcquisitionField(AbstractInference):  
+class InferenceAcquisitionFieldTF(AbstractTensorflow):  
 
     def pre_process(self, dictionnaire:dict) -> TensorProto:
         """[summary]
@@ -26,7 +26,7 @@ class InferenceAcquisitionField(AbstractInference):
         data_path = settings.STORAGE_DIR
         idImage=str(dict['id'])
         nifti_path =data_path+'/image/image_'+idImage+'_CT.nii'
-        resampled_array = Nifti(nifti_path).resample(shape_matrix=(256, 256, 1024), shape_physic=(700, 700, 2000))
+        resampled_array = Nifti(nifti_path).resample((256, 256, 1024))
         resampled_array[np.where(resampled_array < 500)] = 0 #500 UH
         normalize = resampled_array[:,:,:,]/np.max(resampled_array) #normalize
         mip_generator = MIP_Generator(normalize)
@@ -51,6 +51,7 @@ class InferenceAcquisitionField(AbstractInference):
 
     def post_process(self, result) -> dict:
         resultDict = {}
+        # print(result)
         for output in result.outputs:
             outputResult = result.outputs[output]
             resultDict[str(output)] = list(outputResult.float_val)

@@ -1,3 +1,4 @@
+from app.gaelo_processing.models.AbstractTensorflow import AbstractTensorflow
 import json
 import importlib
 
@@ -17,12 +18,12 @@ def handle(request, model_name=''):
 
 
 def prediction(idImage: str, model_name: str) -> dict:
-    inferenceInstance = __getInferenceModel(model_name)
+    inferenceInstance = __getInferenceModel(model_name)  
     results = inferenceInstance.predict(idImage)
     return results
 
 
-def __getInferenceModel(model_name) -> AbstractInference:
+def __getInferenceModel(model_name) -> AbstractInference :
     class_name = model_list[model_name]
     InferenceClass = getattr(importlib.import_module(
         "app.gaelo_processing.models.Inferences."+class_name), class_name)

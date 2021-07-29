@@ -11,7 +11,7 @@ class test_pyradiomics_controller(TestCase):
             "minimumROISize": 1,
             "binWidth": 3.5,
             "normalize": False,
-            "force2D": True,
+            "force2D": False,
             "label": 1,
             "geometryTolerance": 0.5,
             "correctMask": False,

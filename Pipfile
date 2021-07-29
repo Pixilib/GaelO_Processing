@@ -17,6 +17,10 @@ drf-yasg = "*"
 django-rest-framework = "*"
 sphinx-rtd-theme = "*"
 dicom-to-cnn = "*"
+torchserve = "*"
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
 
 [dev-packages]
 autopep8 = "*"
