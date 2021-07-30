@@ -1,6 +1,7 @@
-from .AbstractInference import AbstractInference
-from django.conf import settings
 import grpc
+
+from django.conf import settings
+from .AbstractInference import AbstractInference
 from .pytorch.serve import inference_pb2
 from .pytorch.serve import inference_pb2_grpc
 

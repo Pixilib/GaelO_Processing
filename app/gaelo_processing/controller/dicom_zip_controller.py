@@ -1,17 +1,12 @@
 import os
-from re import U
 import shutil
 import tempfile
 import hashlib
 from zipfile import ZipFile
-import numpy as np
-import SimpleITK as sitk
-from ..utips.utips import Utips
 
 from django.conf import settings
 
 from dicom_to_cnn.tools.pre_processing import series
-from dicom_to_cnn.model.reader.Nifti import Nifti 
 
 from django.http import HttpResponse
 

@@ -1,13 +1,7 @@
 import hashlib
-import os
 import SimpleITK as sitk
-from SimpleITK.SimpleITK import ImageReaderBase, Transform
-from SimpleITK.extra import GetImageFromArray
 import numpy as np
-from numpy.core.arrayprint import array2string
-from numpy.core.fromnumeric import reshape, resize
 import tensorflow as tf
-from abc import ABC
 
 from django.conf import settings
 from tensorflow.core.framework.tensor_pb2 import TensorProto

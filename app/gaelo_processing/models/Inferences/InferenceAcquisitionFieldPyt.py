@@ -1,5 +1,3 @@
-from ..AbstractPytorch import AbstractPytorch
-
 import numpy as np
 from django.conf import settings
 from io import BytesIO
@@ -7,6 +5,7 @@ import json
 
 from dicom_to_cnn.model.reader.Nifti import Nifti 
 from dicom_to_cnn.model.post_processing.mip.MIP_Generator import MIP_Generator 
+from ..AbstractPytorch import AbstractPytorch
 
 class InferenceAcquisitionFieldPyt(AbstractPytorch):  
 

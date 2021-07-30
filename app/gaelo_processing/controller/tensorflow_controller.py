@@ -1,4 +1,3 @@
-from app.gaelo_processing.models.AbstractTensorflow import AbstractTensorflow
 import json
 import importlib
 

@@ -1,12 +1,10 @@
 import numpy as np
 import tensorflow as tf
+
 from django.conf import settings
 
 from tensorflow.core.framework.tensor_pb2 import TensorProto
 from ..AbstractTensorflow import AbstractTensorflow
-
-from skimage.transform import resize
-
 from dicom_to_cnn.model.reader.Nifti import Nifti 
 from dicom_to_cnn.model.post_processing.mip.MIP_Generator import MIP_Generator 
 

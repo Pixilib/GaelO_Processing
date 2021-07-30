@@ -4,8 +4,6 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.http.response import Http404
 
-from ..exceptions.gaelo_processor_exeptions import GaelOBadRequestException, GaelONotFoundException
-
 
 def handle(request, idImage=''):
     method = request.method
