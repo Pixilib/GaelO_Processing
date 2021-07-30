@@ -18,6 +18,15 @@ def handle(request, model_name=''):
 
 
 def prediction(idImage: str, model_name: str) -> dict:
+    """[Get the prediction result for a given image and model]
+
+    Args:
+        idImage (str): [Get the name of the model to be used]
+        model_name (str): [Get the name of the model to be used]
+
+    Returns:
+        dict: [The result of the prediction ]
+    """
     inferenceInstance = __getInferenceModel(model_name)  
     results = inferenceInstance.predict(idImage)
     return results

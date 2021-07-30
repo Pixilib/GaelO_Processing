@@ -71,10 +71,10 @@ class InferencePTSegmentation(AbstractInference):
         return tf.make_tensor_proto(data, shape=[1,256,128,128,2])
 
     def post_process(self, result) -> dict:  
-        """[summary]
+        """[Provide the result in the correct format]
 
         Args:
-            result ([type]): [description]
+            result ([dict]): [Gross result of the prediction]
 
         Returns:
             dict: [Id of images generated]

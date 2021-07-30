@@ -12,18 +12,10 @@ from tensorflow_serving.apis import prediction_service_pb2_grpc
 
 
 class AbstractInference(ABC):
-
-    # def __getServer(idImage):
-    #     server=idImage['server']
-    #     class_name = server_list[server]
-    #     AbstractClass=getattr(importlib.import_module(
-    #         "app.gaelo_processing.models."+class_name), class_name)
-    #     return AbstractClass
     
     @abstractmethod
     def predict(self,idImage):
         pass
-
 
     @abstractmethod
     def pre_process(self, idImage) -> TensorProto:
@@ -40,5 +32,3 @@ class AbstractInference(ABC):
     @abstractmethod
     def get_model_name(self) -> str:
         pass
-
-    print('je suis dans abstract inference')

@@ -11,18 +11,17 @@ from tensorflow_serving.apis import prediction_service_pb2_grpc
 class AbstractTensorflow(AbstractInference):
 
     def predict(self, idImage: str) -> dict:
-            """[summary]
+            """[Open GRPC serve for TF ]
 
             Args:
-                idImage (str): [description]
+                idImage (str): [id of image input]
 
             Returns:
-                [dictionary]: [return formated dictionary ready ready to be sent as a JSON]
+                [dictionary]: [return formated dictionary ready to be sent as a JSON]
             """
-            # call pre_process
-            print('je suis dans TF')
+            #call pre_process
             input_tensor = self.pre_process(idImage)
-            max=256*128*128*10*10
+            max=256*128*128*10*10 #Max data sent by grpc
             channel = grpc.insecure_channel(
                 settings.TENSORFLOW_SERVING_ADDRESS+':'+settings.TENSORFLOW_SERVING_PORT,options=[('grpc.max_message_length', max),
                                             ('grpc.max_send_message_length', max),

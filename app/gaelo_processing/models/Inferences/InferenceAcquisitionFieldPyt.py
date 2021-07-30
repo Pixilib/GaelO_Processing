@@ -10,7 +10,15 @@ from dicom_to_cnn.model.post_processing.mip.MIP_Generator import MIP_Generator
 
 class InferenceAcquisitionFieldPyt(AbstractPytorch):  
 
-    def pre_process(self, dictionnaire:dict) :
+    def pre_process(self, dictionnaire:dict) ->BytesIO :
+        """[Pre_process for pytorch]
+
+        Args:
+            dictionnaire (dict): [Dictionary containing the id of the images]
+
+        Returns:
+            BytesIO: [description]
+        """
         dict=dictionnaire
         data_path = settings.STORAGE_DIR
         idImage=str(dict['id'])
@@ -32,6 +40,8 @@ class InferenceAcquisitionFieldPyt(AbstractPytorch):
     def post_process(self, result) -> dict:
         prediction = result.prediction.decode('utf-8')
         prediction = json.loads(prediction)
+
+        #vertex true/false
         list=prediction[0]
         list2=list[0]
         if list2[0]>list2[1]:
@@ -39,6 +49,7 @@ class InferenceAcquisitionFieldPyt(AbstractPytorch):
         else :
             head=False
 
+        #see hips/knee/foot ?
         list=prediction[1]
         list2=list[0]
         maxPosition = list2.index(max(list2))
@@ -46,6 +57,7 @@ class InferenceAcquisitionFieldPyt(AbstractPytorch):
         if(maxPosition == 1) : leg='Knee'
         if(maxPosition == 2) : leg='Foot'
 
+        #right_arm down true/false
         list=prediction[2]
         list2=list[0]
         list2[0]
@@ -54,6 +66,7 @@ class InferenceAcquisitionFieldPyt(AbstractPytorch):
         else :
             right_arm=False
 
+        #lef_arm down true/false
         list=prediction[3]
         list2=list[0]
         list2[0]

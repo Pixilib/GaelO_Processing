@@ -16,7 +16,7 @@ class Utips:
             zip_file (str): [The zip link]
 
         Returns:
-            NONE
+            dict : [The id of dicom series]
         """
        
         image_md5 = hashlib.md5(str(zip_file).encode())

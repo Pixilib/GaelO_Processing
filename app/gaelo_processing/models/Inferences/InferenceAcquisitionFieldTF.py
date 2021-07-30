@@ -14,7 +14,7 @@ from dicom_to_cnn.model.post_processing.mip.MIP_Generator import MIP_Generator
 class InferenceAcquisitionFieldTF(AbstractTensorflow):  
 
     def pre_process(self, dictionnaire:dict) -> TensorProto:
-        """[summary]
+        """[Pre_process for TF]
 
         Args:
             dictionnaire (dict): [Dictionary containing the id of the images]
@@ -33,20 +33,6 @@ class InferenceAcquisitionFieldTF(AbstractTensorflow):
         mip = mip_generator.project(angle=0)
         mip = np.expand_dims(mip, -1)
         mip = np.array(mip).astype('float32')
-
-        #objet = Nifti(path_ct)
-        #resampled = objet.resample(shape=(256, 256, 1024))
-        #mip_generator = MIP_Generator(resampled)
-        #array=mip_generator.project(angle=0)
-        #Ici va disparaitre avec un nouvel entrainement sur des tailles natives et tete en bas (reference dicom)
-        #et image normalisee de 0 a 1024 puis normalise de 0 a 1
-        #array = np.flip(array, 0)
-        #array = resize(array, (503, 136))
-        #fin
-        #array[np.where(array < 500)] = 0 #500 UH
-        #array[np.where(array > 1024)] = 0 #1024 UH
-        #array = array[:,:,]/1024
-        #array = np.array(array).astype('float32')
         return tf.make_tensor_proto(mip, shape=[1,1024,256,1])
 
     def post_process(self, result) -> dict:
@@ -73,6 +59,7 @@ class InferenceAcquisitionFieldTF(AbstractTensorflow):
         else :
             head=False
         
+        #see hips/knee/foot ?
         maxPosition = resultDict['legs'].index(max(resultDict['legs']))
         if(maxPosition == 0) : leg='Hips'
         if(maxPosition == 1) : leg='Knee'
