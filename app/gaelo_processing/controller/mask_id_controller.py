@@ -38,6 +38,6 @@ def get_metadata(idMask: str) -> dict:
     Returns:
         dict: [return formated dictionary ready ready to be sent as a JSON]
     """
-    path = settings.STORAGE_DIR+"/image/image_"+idMask+".nii"
+    path = settings.STORAGE_DIR+"/mask/mask_"+idMask+".nii"
     image = sitk.ReadImage(path)
     return get_metadata_dictionary(image)

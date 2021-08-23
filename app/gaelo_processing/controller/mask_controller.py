@@ -27,13 +27,19 @@ def create_mask(data: str) -> str:
         [str]:[id mask]
     """
     data_path = settings.STORAGE_DIR
+    data_path2 = settings.STORAGE_DIR+"/mask/mask_8.nii"
+    data2 = open(data_path2, "rb").read()
+    if(data==data2):
+        print("====")
     mask_md5 = hashlib.md5(str(data).encode())
-    mask = base64.b64decode(data)
-    id_mask = mask_md5.hexdigest()
-    decode_mask = open(data_path+'/mask/mask_'+id_mask+'.nii', 'wb')
-    decode_mask.write(mask)
-    decode_mask.close()
-    return id_mask
+    mask_id = mask_md5.hexdigest()
+    mask = open(data_path+'/mask/mask_'+mask_id+'.nii', 'wb')
+    mask.write(data)
+    mask.close()
+    print(mask_id)
+    return mask_id
+
+ 
 
 
 def get_mask_id():
@@ -42,10 +48,10 @@ def get_mask_id():
     Returns:
         [list]: [Return a list with all Mask id content in the storage]
     """
-    storage_folder = settings.STORAGE_DIR+'/image'
+    storage_folder = settings.STORAGE_DIR+'/mask'
     list_id = []
     for file in os.listdir(storage_folder):
         if os.path.isfile(os.path.join(storage_folder, file)):
-            id = file[6:-4]
+            id = file[5:-4]
             list_id.append(id)
     return list_id

@@ -10,6 +10,8 @@ from ..AbstractInference import AbstractInference
 from dicom_to_cnn.model.fusion.Fusion import Fusion
 from dicom_to_cnn.model.segmentation.rtstruct.RTSS_Writer import RTSS_Writer
 from dicom_to_cnn.model.segmentation.dicom_seg.DICOMSEG_Writer import DICOMSEG_Writer
+from dicom_to_cnn.model.post_processing.clustering.Watershed import Watershed
+
 
 class InferencePTSegmentation(AbstractInference):  
 
@@ -91,18 +93,25 @@ class InferencePTSegmentation(AbstractInference):
         transformation.SetDefaultPixelValue(0.0)
         transformation.SetInterpolator(sitk.sitkNearestNeighbor)
         image=transformation.Execute(image)
+
+        if (self.sousSeg=='True'):
+            sousSeg=Watershed(image,self.img_pt)
+            sousSeg=sousSeg.applied_watershed_model()
+            save_nifti=InferencePTSegmentation
+            save_nifti.__save_to_nifti(sousSeg)
+        else:
         
-        #save to nifti
-        save_nifti=InferencePTSegmentation
-        id_mask=save_nifti.__save_to_nifti(image)
-        mask_path=settings.STORAGE_DIR+'/mask/mask_'+id_mask+'.nii'
-        serie_path=settings.STORAGE_DIR+'/dicom/dicom_serie_001_pt'
-        #save to dicomseg and dicomrt
-        save=InferencePTSegmentation
-        ids=save.__save_to_dicomseg_rtstruct(mask_path,serie_path)
-        dict={'id_mask':id_mask, 'id_dicomseg': ids[0] ,'id_dicomrt':ids[1] }
-       
-        return dict
+            #save to nifti
+            save_nifti=InferencePTSegmentation
+            id_mask=save_nifti.__save_to_nifti(image)
+            mask_path=settings.STORAGE_DIR+'/mask/mask_'+id_mask+'.nii'
+            serie_path=settings.STORAGE_DIR+'/dicom/dicom_serie_001_pt'
+            #save to dicomseg and dicomrt
+            save=InferencePTSegmentation
+            ids=save.__save_to_dicomseg_rtstruct(mask_path,serie_path)
+            dict={'id_mask':id_mask, 'id_dicomseg': ids[0] ,'id_dicomrt':ids[1] }
+        
+            return dict
 
     def get_input_name(self) -> str:
         return 'input'
