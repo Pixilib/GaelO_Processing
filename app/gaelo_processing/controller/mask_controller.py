@@ -26,11 +26,7 @@ def create_mask(data: str) -> str:
         Returns:
         [str]:[id mask]
     """
-    data_path = settings.STORAGE_DIR
-    data_path2 = settings.STORAGE_DIR+"/mask/mask_8.nii"
-    data2 = open(data_path2, "rb").read()
-    if(data==data2):
-        print("====")
+    data_path = settings.STORAGE_DIR  
     mask_md5 = hashlib.md5(str(data).encode())
     mask_id = mask_md5.hexdigest()
     mask = open(data_path+'/mask/mask_'+mask_id+'.nii', 'wb')

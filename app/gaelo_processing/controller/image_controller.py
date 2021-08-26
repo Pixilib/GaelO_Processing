@@ -55,4 +55,5 @@ def get_image_id() -> list:
                 i=i+1
             id = f[6:-4]
             list_id.append(id)#{"id"+str(i):id}
+    print(list_id)       
     return list_id
