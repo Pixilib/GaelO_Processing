@@ -11,7 +11,9 @@ def handle(request, model_name=''):
     method = request.method
     if(method == 'POST'):
         body_unicode = request.body.decode('utf-8')
+        print(type(body_unicode))
         body = json.loads(body_unicode)
+        print(type(body))
         tensorflow_response = prediction(body, model_name)
         return JsonResponse(tensorflow_response,safe=False)
 

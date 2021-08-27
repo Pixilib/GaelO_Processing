@@ -23,7 +23,7 @@ class InferenceAcquisitionFieldTF(AbstractTensorflow):
         dict=dictionnaire
         data_path = settings.STORAGE_DIR
         idImage=str(dict['id'])
-        nifti_path =data_path+'/image/image_'+idImage+'_CT.nii'
+        nifti_path =data_path+'/image/image_'+idImage+'.nii'
         resampled_array = Nifti(nifti_path).resample((256, 256, 1024))
         resampled_array[np.where(resampled_array < 500)] = 0 #500 UH
         normalize = resampled_array[:,:,:,]/np.max(resampled_array) #normalize

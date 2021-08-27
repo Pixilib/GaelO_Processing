@@ -1,0 +1,61 @@
+{
+  "setting" : {	
+		"minimumROIDimensions": 2,
+		"minimumROISize": 1,		
+		"binWidth" : 3.5,
+		"normalize":false,
+		"force2D": true,		
+		"label" : 2,
+		"geometryTolerance" : 0.5,
+		"correctMask" : false,
+		"additionalInfo" : true,
+		"label_channel" : 0,
+		"binCount" : 5,
+		"normalizeScale" : 1.5,
+		"removeOutliers" : 1,
+		"resampledPixelSpacing" : [1,2,3],
+		"interpolator" : "sitkLinear",
+		"padDistance" : 0,			
+		"resegmentMode" : "absolute",
+		"resegmentShape" : true,
+		"preCrop" : true,
+		"sigma" : [],
+		"start_level" : 0,
+		"force2Ddimension" :1,
+		"level" : 1,
+		"wavelet":"coif1",
+		"gradientUseSpacing" : true,
+		"lbp2DRadius" : 5.3,
+		"lbp2DSamples" : 1,
+		"lbp2DMethod" : "default",
+		"lbp3DLevels" : 1,
+		"lbp3DIcosphereRadius" : 2.1,
+		"lbp3DIcosphereSubdivision": 0,
+		"voxelArrayShift" : 1,
+		"symmetricalGLCM" : true,    
+		"gldm_a" : 0		
+  },
+  "imageType" :{
+		"Original": {},
+		"LoG": {
+			"sigma" : [1.0, 3.0]
+			} ,
+		 "Wavelet":{
+			"binWidth": 10
+			}
+  },
+  "featureClass":{
+	   "shape":["Elongation","Flatness"],
+	   "firstorder":["10Percentile","90Percentile"],
+	   "glcm":["Autocorrelation","JointAverage"],
+	   "glrlm":["LongRunHighGrayLevelEmphasis"],
+	   "glszm":["SizeZoneNonUniformity"],
+	   "gldm":["DependenceEntropy"]	   
+  },
+  "voxelSetting":{
+		"kernelRadius": 2,
+		"maskedKernel": true,
+		"initValue": "nan",
+		"voxelBatch": 10000
+  }
+}

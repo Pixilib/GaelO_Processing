@@ -1,0 +1,21 @@
+{
+  "setting" : {	
+		"minimumROIDimensions": 2,
+		"minimumROISize": 1,
+		"binWidth" : 3.5,
+		"normalize":false,
+		"force2D": true,
+		"label" : 1,
+		"label_channel":1
+  },
+  "imageType" :{},
+  "featureClass":{
+	   "shape":["Elongation","Flatness"],
+	   "firstorder":["10Percentile","90Percentile"],
+	   "glcm":["Autocorrelation","JointAverage"],
+	   "glrlm":["LongRunHighGrayLevelEmphasis"],
+	   "glszm":["SizeZoneNonUniformity"],
+	   "gldm":["DependenceEntropy"]	   
+  },
+  "voxelSetting":{}
+}
