@@ -35,7 +35,7 @@ def get_dicom_zip(zip_file):
     #unzip_file and save dicom series
     image_md5 = hashlib.md5(str(file.name).encode())
     dicom_id = image_md5.hexdigest()
-    os.mkdir(settings.STORAGE_DIR+'/dicom/dicom_serie_'+dicom_id)
+    os.mkdirs(settings.STORAGE_DIR+'/dicom/dicom_serie_'+dicom_id)
     destination=settings.STORAGE_DIR+'/dicom/dicom_serie_'+dicom_id
     with ZipFile(file.name) as my_zip:
         for member in my_zip.namelist():
