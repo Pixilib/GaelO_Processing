@@ -35,7 +35,7 @@ SECRET_KEY = 'django-insecure-m%8u6+qp4*^-k6gpo+se28f!mgtk!b^5r5l1)u)$(vo=th_hu1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True #True de base
 
-ALLOWED_HOSTS = ['testserver','localhost']
+ALLOWED_HOSTS = ['*']
 
 TENSORFLOW_SERVING_ADDRESS=env('TENSORFLOW_SERVING_ADDRESS')
 TENSORFLOW_SERVING_PORT=env('TENSORFLOW_SERVING_PORT')
